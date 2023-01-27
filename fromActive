@@ -1,0 +1,150 @@
+#!/usr/bin/env zsh
+
+## Description: Function
+## Class: Autosource
+## Licence: GLL / GLS
+## Scriptor: $SHELL
+## Type: Shell
+
+
+fromActive() {
+	setopt extendedglob
+
+
+	for files in /main/source-docs/*; do
+           source $files
+	   if [ ! -e "/main/source-docs/alias" ]; then
+	      echo "Alias local cannot be found"
+	   else
+	      for src_alias in /main/source-docs/alias; do
+	         source $src_alias
+	      done
+	   fi
+	done
+	unset files; export files=''
+	unset src_alias; export src_alias=''
+
+
+	source ~/.head && getHead
+
+	redoDiskWrite() {
+
+		if lsblk | grep -q "/mnt/boot/efi"; then
+			umount /mnt/boot/efi
+			rm -r /mnt/boot/*
+			if lsblk | grep -q "/mnt/home"; then
+				umount /mnt/home
+				rm -r /mnt/home/*
+				if lsblk | grep -q "/mnt"; then
+					umount /mnt
+					rm -r /mnt/*
+				fi
+			fi
+		else
+			echo "Chosen Disk in not Mounted Currently"
+			wait
+		fi
+		determineDisk() {
+
+			determinedDiskToWrite=$(yad --entry --title="Which Disk?" --text="Determining Disk To Write")
+
+			case $determinedDiskToWrite in
+				sda)
+					wipefs -a /dev/sda2
+					wait
+					wipefs -a /dev/sda4
+					wait
+					wipefs -a /dev/sda6
+					wait
+					wipefs -a /dev/sda8
+					wait
+					export activeDecision="/dev/sda"
+					;;
+				sdb)
+					wipefs -a /dev/sdb2
+					wait
+					wipefs -a /dev/sdb4
+					wait
+					wipefs -a /dev/sdb6
+					wait
+					wipefs -a /dev/sdb8
+					wait
+					export activeDecision="/dev/sdb"
+					;;
+				nvme)
+					wipefs -a /dev/nvme0n1p2
+					wait
+					wipefs -a /dev/nvme0n1p4
+					wait
+					wipefs -a /dev/nvme0n1p6
+					wait
+					wipefs -a /dev/nvme0n1p8
+					wait
+					export activeDecision="/dev/nvme0n1"
+					;;
+				*)
+					echo "Only Disks SDA, SDB, or NVME are valid for this options"
+					;;
+			esac
+
+			unset determinedDiskToWrite
+
+		}
+
+		determineDisk
+		wait
+		sleep 2
+
+		makeFilesystemsOnSelected() {
+
+			for selection in $activeDecision; do
+				echo $selection
+				wait
+				if [[ $selection = "/dev/sda" ]]; then
+					mkfs.vfat /dev/sda2
+					wait
+					mkfs.ext4 /dev/sda4
+					wait
+					mkfs.ext4 /dev/sda6
+					wait
+					mkswap /dev/sda8
+					wait
+				elif [[ $selection = "/dev/sdb" ]]; then
+					mkfs.vfat /dev/sdb2
+					wait
+					mkfs.ext4 /dev/sdb4
+					wait
+					mkfs.ext4 /dev/sdb6
+					wait
+					mkswap /dev/sdb8
+					wait
+				elif [[ $selection = "/dev/nvme" ]]; then
+					mkfs.vfat /dev/nvme0n1p2
+					wait
+					mkfs.ext4 /dev/nvme0n1p4
+					wait
+					mkfs.ext4 /dev/nvme0n1p6
+					wait
+					mkswap /dev/nvme0n1p8
+					wait
+				else
+					echo "Unable to Make Filesystem.  Try Again After Correcting Script or Disk"
+				fi
+
+			done
+
+		}
+
+		while true; do
+			makeFilesystemsOnSelected
+		done
+
+	}
+
+	if [[ $? -eq 0 ]]; then
+		redoDiskWrite
+	fi
+
+}
+
+fromActive

@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+## Description: Function
+## Class: Autosource
+## Licence: GLL / GLS
+## Scriptor: ZSH
+## Type: Shell
+
+buncha-shit() {
+
+	setopt extendedglob
+   #setopt emulate -L zsh
+
+	pkg-strap
+	get-paru
+	get-yay
+	get-lightly
+	get-klassy
+	get-shaders
+
+}
+

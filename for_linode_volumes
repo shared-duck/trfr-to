@@ -1,0 +1,19 @@
+# linode volume mount script
+
+echo "Name of new volume is? :$is"
+read is
+
+mkfs.ext4 "/dev/disk/by-id/scsi-0Linode_Volume_$is"
+wait 
+mkdir "/mnt/$is"
+wait
+mount "/dev/disk/by-id/scsi-0Linode_Volume_$is" "/mnt/$is"
+wait
+
+echo '/dev/disk/by-id/scsi-0Linode_Volume_"$is" /mnt/"$is"' ext4 defaults,noatime,nofail 0 2
+wait
+
+if [[ $? != 0 ]]; then
+   echo "Error:$?"
+   return 69
+fi

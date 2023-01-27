@@ -1,0 +1,104 @@
+#!/usr/bin/zsh
+
+setColors() {
+	 blue() {
+		  local blue="$fg[blue]"
+	 }
+	 BLUE() {
+		  local BLUE="$fg_bold[blue]"
+	 }
+	 green() {
+		  local green="$fg[green]"
+	 }
+	 GREEN() {
+		  local GREEN="$fg_bold[green]"
+	 }
+	 red() {
+		  local red="$fg[red]"
+	 }
+	 RED() {
+		  local RED="$fg_bold[red]"
+	 }
+	 cyan() {
+		  local cyan="$fg[cyan]"
+	 }
+	 CYAN() {
+		  local CYAN="$fg_bold[cyan]"
+	 }
+	 yellow() {
+		  local yellow="$fg[yellow]"
+	 }
+	 YELLOW() {
+		  local YELLOW="$fg_bold[yellow]"
+	 }
+	 mag() {
+		  local mag="$fg[magenta]"
+	 }
+	 MAG() {
+		  local MAG="$fg_bold[magenta]"
+	 }
+
+}
+
+	(
+
+	   echo "1"; sleep 1
+	   echo "Updating Packages"; sleep 1
+		  sudo pacman -Syyu; wait
+	   echo "2"; sleep 1
+	   echo "Updating fstab file"; sleep 1
+		  sudo cat /etc/fstab; wait
+	   echo "3"; sleep 1
+	   echo "Checking temp of core and like objects"; sleep 1
+		  sudo sensors; wait
+	   echo "4"; sleep 1
+	   echo "Verifying Docker instance"; sleep 1
+		  sudo systemctl status docker; wait
+	   echo "5"; sleep 1
+	   echo "Verifying network connectivity"; sleep 1
+		  sudo ip a; wait
+	   echo "6"; sleep 1
+	   echo "Creating New Corbi volume and Corbi network"
+		  sudo docker network create new-net; wait
+		  sudo docker volume create new-volume; wait
+	   echo "7"; sleep 1
+	   echo "Checking for Corbi-Compose file"; sleep
+		  if [ -e "compose.yml" ]; then
+				echo "Corbi-Compose file exists, would you like to use it instead? :$ccompose"
+				read ccompose
+				if [[ $ccompose = y ]]; then
+					 sudo docker compose up
+				fi
+		  elif [ -e "docker-compose.yml" ]; then
+				echo "Corbi-Compose file exists, would you like to use it instead? :$ccompose"
+				read ccompose
+				if [[ $ccompose = y ]]; then
+					 sudo docker-compose up
+				fi
+		  else
+				(
+				echo "No Corbi-Compose file has been found, proceed with standard Corbi File Excecution? :$standard_exec"
+					 if [[ $standard_exec = y ]]; then
+						  docker run $app
+					 fi
+				case $standard_exec in
+					 y)
+						  docker run $app;;
+					 Y)
+						  docker run $app;;
+					 n)
+						  return 69;;
+					 N)
+						  return 69;;
+				esac
+				) |
+					 standard_exec=$(zenity --entry)
+
+		  fi
+
+	 ) |
+		  zenity --text-info \
+				   --auto-scroll \
+				   --title="yargles"
+
+

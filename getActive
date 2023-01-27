@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+
+skunk() {
+
+	 source ~/.head && getHead
+	 unset lst
+	 unfunction get; unalias get
+	 alias get='echo'
+
+	 skat() {
+		  getHead
+		  local vagina="$fg_bold[green]"
+		  local clitorous="$fg_bold[cyan]"
+
+		  for whatToUse in /mina; do
+
+
+				get $whatToUse
+
+				if [ -e "/mina" ]; then
+
+					 alias activeFileName=$(
+						  echo
+
+						  )
+				fi
+
+		  done
+
+
+	 }
+	 skat && \
+	 while true; do
+		  get activeFileName
+	 done
+
+}
+skunk

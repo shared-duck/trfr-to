@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+function danielle() {
+
+	 (
+		  echo "Well Hello there Cutie!"
+		  sleep 3
+		  echo "Im Going To Update The System Before We Get Started
+		  "
+		  sleep 2
+		  sudo pacman -Syyu
+		  sudo pacman -Syuu
+		  sudo pacman -Fy
+		  sleep 2
+		  echo "Ok The System Has Been Updated
+		  "
+		  sleep 2
+		  echo "Done With Update
+		  "
+	 ) |
+	 zenity --text-info --text="Hello Danielle" --title="Well Hello There" --auto-scroll
+
+}
+danielle

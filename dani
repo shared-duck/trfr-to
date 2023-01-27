@@ -1,0 +1,27 @@
+#!/usr/bin/env zsh
+
+function 'danielle says'() {
+
+   echo "What does Corbin Say? :$corbin_says"
+   read corbin_says 
+
+   case $corbin_says in
+      1)
+        echo ''
+      ;;
+
+      *)
+	echo "Danielle Says: I Gotchoo"
+      ;;
+   esac
+
+   unset corbin_says
+   if [[ -z ./dani ]]; then
+      "danielle says"
+   else
+      echo "Naw, im not Simon you fucker... I don't say shit"
+   fi
+
+}
+
+"danielle says" 
